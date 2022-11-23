@@ -1,5 +1,4 @@
-import { RuleEntity } from 'src/rules/entities/rule.entity';
-import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('forms')
 export class FormEntity {
@@ -7,7 +6,7 @@ export class FormEntity {
   id?: number;
 
   @Column()
-  requestStatusId: string;
+  requestStatusId: number;
 
   @Column()
   formId: string;
@@ -22,7 +21,4 @@ export class FormEntity {
 
   @Column()
   formActive: boolean;
-
-  @ManyToMany(() => RuleEntity, (rule) => rule.forms)
-  forms: FormEntity[];
 }

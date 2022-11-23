@@ -1,0 +1,61 @@
+include:
+  - project: 'tech-corp/enterprise-support/finance-management/templates/ci-cd'
+    file: '/all-in-one-finm/all-cicd-nodejs-npm-gcp-apigee-apyb-rup.yml'
+build:
+  extends: .build-nest
+
+
+# Variables de entorno locales
+variables:
+  #DESING_CONTRACT: 'tech-corp/enterprise-support/finance-management/accounting-ledger/desing-contract-acgl'
+  #DISABLE_ENVGONSUL: 'true'
+
+  DISABLE_APIGEE_BUILD: 'true'
+  DISABLE_APIGEE_PROXY: 'true'
+  DISABLE_APIGEE_DESING: 'true'
+
+  BUILD_IMAGE: gcr.io/gsc-gitlab-ce/cicd/secaas/base/node-dev:16-latest
+  NPM_DEP_MANUAL: 'npm install'
+  NPM_DEP_RUN_MANUAL: 'npm install'
+  NPM_RUN_ARGS_UNIT: 'test'
+  NPM_RUN_ARGS_COV: 'test:coverage'
+  NPM_RUN_ARGS_MUT: 'mutode'
+  SONAR_EXCLUSIONS: 'node_modules/**'
+  PROJECT_LANG: 'node'
+  APP_PORT_QA: 3000
+  APP_PORT_PRD: 3001
+  APP_ENV_DEV: 'dev'
+  APP_ENV_QA: 'test'
+  APP_ENV_UAT: 'uat'
+  APP_ENV_PRD: 'prd'
+  CI_APP_REPLICAS_QA: 1
+  CI_APP_MAX_REPLICAS_QA: 2
+  CI_APP_REPLICAS_PRD: 1
+  CI_APP_MAX_REPLICAS_PRD: 2
+
+  # GCP
+  KUBE_NAMESPACE_QA: 'qa'
+  KUBE_NAMESPACE_PRD: 'production'
+  CI_APP_HOST_QA: "qa-bff-vcp" #"ms-mpn-cebes-test-reserved" # reserved = Virtual Host Name (qa-apigw-dte,qa-bff-dte | qa-apigw-scc,qa-bff-scc)
+  CI_APP_HOST_PRD: "qa-bff-vcp" # reserved = Virtual Host Name (apigw-dte,bff-dte | apigw-scc,bff-scc)
+  CI_APP_DOMAIN_QA: ".falabella.com" #".falabella.com"
+  CI_APP_DMAIN_PRD: ".falabella.com"
+  CI_APP_GATEWAY_QA: "istio-system/qa-bff-gw-front" #"back-gtw" # reserved = Gateway Name (gateway-back,gateway-bff)
+  CI_APP_GATEWAY_PRD: "istio-system/qa-bff-gw-front"           # reserved = Gateway Name (gateway-back,gateway-bff)
+  
+  INGRESS_REWRITE: "/"
+
+  # ONPREM
+  #KUBE_NAMESPACE_QA: 'finm-bs-cap-reserved-test'      # reserved = Acronimo del Proyecto (dte,scc,ecm,mpn,acc,journal,prv)
+  #KUBE_NAMESPACE_PRD: 'finm-bs-cap-reserved-prd'      # reserved = Acronimo del Proyecto (dte,scc,ecm,mpn,acc,journal,prv)
+  #CI_APP_HOST_QA: "finm-uat"
+  #CI_APP_HOST_PRD: "finm"
+  #CI_APP_DOMAIN_QA: ".falabella.com"
+  #CI_APP_DOMAIN_PRD: ".falabella.com"
+  #CI_APP_GATEWAY_QA: "istio-system/gateway-finm"    # reserved = Gateway Name (NS/gateway-finm)
+  #CI_APP_GATEWAY_PRD: "istio-system/gateway-finm"   # reserved = Gateway Name (NS/gateway-finm,NS/gateway-finm)
+
+
+  #MODE_QA: 'online'
+  #Path consumo microservicio
+  API_BASE_NAME: "ms-vcp-form"   # reserved = Nombre del MS o del Resositorio Gitlab (No debe exceder los 16 char)

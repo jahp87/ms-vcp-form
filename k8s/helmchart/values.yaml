@@ -1,0 +1,122 @@
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+maxReplicaCount: 2
+
+appLabel: xxxx
+appEnvironment: xxxx
+#appMode: xxxx
+#appProjectId: xxxx
+ciEnvironment: xxxx
+
+image:
+  repository: xxxx
+  tag: xxxx
+  version: xxxx
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  name: xxxx
+  portName: http
+  port: xxxx
+  targetPort: xxxx
+
+secret:
+  name: xxxx
+#  registry: xxxx
+#  username: xxxx
+#  password: xxxx
+#  email: xxxx
+
+labelSM:
+  business: rup  # reserved = Acronimo del Proyecto (dte,scc,ecm,mpn,acc,journal,prv)
+  projectName: xxxx   # used helmchart.name
+  branch: xxxxx       # Use appEnvironment
+  
+resources:
+  limits:
+    cpu: 800m
+    memory: 856Mi
+  requests:
+    cpu: 500m
+    memory: 528Mi
+
+# hostAliases allows the modification of the hosts file inside a container
+#hostAliases:
+#  - ip: "10.102.0.15"
+#    hostnames:
+#    - "mongodb-mongodb-replicaset-0.mongodb-mongodb-replicaset.default.svc.cluster.local"
+#  - ip: "10.102.0.14"
+#    hostnames:
+#    - "mongodb-mongodb-replicaset-1.mongodb-mongodb-replicaset.default.svc.cluster.local"
+#  - ip: "10.102.0.16"
+#    hostnames:
+#    - "mongodb-mongodb-replicaset-2.mongodb-mongodb-replicaset.default.svc.cluster.local"
+#  - ip: "10.102.0.18"
+#    hostnames:
+#    - "mongodbrs-mongodbrs-replicaset-0.mongodbrs-mongodbrs-replicaset.default.svc.cluster.local"
+#  - ip: "10.102.0.19"
+#    hostnames:
+#    - "mongodbrs-mongodbrs-replicaset-1.mongodbrs-mongodbrs-replicaset.default.svc.cluster.local"
+#  - ip: "10.102.0.17"
+#    hostnames:
+#    - "mongodbrs-mongodbrs-replicaset-2.mongodbrs-mongodbrs-replicaset.default.svc.cluster.local"
+
+nodeSelector: {}
+
+tolerations: []
+
+podDisruptionBudget:
+  maxUnavailable: 1
+  minAvailable: 1
+
+deployment:
+  spec:
+    strategyType: RollingUpdate
+    progressDeadlineSeconds: 30
+    maxUnavailable: 0
+    maxSurge: 25%
+  containers:
+    healthCheck:
+      livenessPath: "status/healthy"
+      readinessPath: "status/alive"
+      initialDelaySeconds: 20
+      timeoutSeconds: 15
+      failureThreshold: 5
+    restartPolicy: Always
+
+hpa:
+  cpuAverage: 80
+  memoryAverage: 90
+
+getSecrets:
+  # secret manager
+  name: xxxx
+  key: xxxx
+  #path: xxxx
+  # kms
+  #LOCATION: xxxxx
+  #KEYRING: xxxxx
+  #KEY: xxxxx
+  #PLAINTEXT_FILE: xxxxx
+  #CIPHERTEXT_FILE: xxxxx
+  #BUCKET_NAME: xxxxx
+  #PROJECT_NAME_ID: xxxxx
+  #SERVICE_ACCOUNT_FILE_NAME_KMS: xxxxx
+  #SERVICE_ACCOUNT_EMAIL_KMS: xxxxx
+  #MS_JSON_FILE: xxxxx
+
+istio:
+  virtualService:
+    service: xxxx
+    prefix: xxxx
+    rewrite:
+      uri: xxxx
+    host: xxxx
+    domain: xxxx
+    gateway:
+      name: xxxxx
+
+

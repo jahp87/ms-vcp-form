@@ -1,0 +1,124 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "helmchart.fullname" . }}
+  labels:
+    app: {{ .Values.appLabel }}
+    version: "v{{ .Values.image.version }}"
+    app.kubernetes.io/name: {{ include "helmchart.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  progressDeadlineSeconds: {{ .Values.deployment.spec.progressDeadlineSeconds }}
+  strategy:
+    type: {{ .Values.deployment.spec.strategyType }}
+    rollingUpdate:
+      maxUnavailable: {{ .Values.deployment.spec.maxUnavailable }}
+      maxSurge: {{ .Values.deployment.spec.maxSurge }}
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.appLabel }}   
+      app.kubernetes.io/name: {{ include "helmchart.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.appLabel }}
+        version: "v{{ .Values.image.version }}"
+        app.kubernetes.io/name: {{ include "helmchart.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      imagePullSecrets:
+        - name: {{ .Values.secret.name }}               
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.targetPort }}
+          env:
+          - name: API_VERSION
+            value: "{{ .Values.image.version }}"
+          - name: CI_ENVIRONMENT_RUN
+            value: "{{ .Values.ciEnvironment }}"
+          - name: PORT
+            value: "{{ .Values.service.targetPort }}"
+          - name: APP_ENV
+            value: "{{ .Values.appEnvironment }}"
+          #- name: MODE
+          #  value: "{{ .Values.appMode }}"
+          - name: BUSINESS
+            value: {{ .Values.labelSM.business }}
+          - name: PROJECT_NAME
+            value: "{{ include "helmchart.name" . }}"
+          - name: BRANCH
+            value: "{{ .Values.appEnvironment }}"
+          #- name: GOOGLE_APPLICATION_CREDENTIALS
+          #  value: "{{ .Values.appEnvironment }}" 
+          #- name: GOOGLE_APPLICATION_CREDENTIALS
+          #  value: "/secrets/{{ .Values.getSecrets.path }}"
+          #- name: JSON_SIZE
+          #  value: "10mb"       
+          - name: GCSM_PROJECT          #secreto que contiene el numero de proyecto en base 64
+            valueFrom:
+              secretKeyRef: 
+                name: gsm-account
+                key: GCP_PROJECT_NUMBER   #970030721842
+          - name: GSM_AUTH    #Secreto que contiene el sa.json del secreto en base 64
+            valueFrom:
+              secretKeyRef: 
+                name: gsm-account
+                key: SERVICE_ACCOUNT_VALUE_SM
+          #livenessProbe:
+          #  httpGet:
+          #    path: "{{ .Values.istio.virtualService.rewrite.uri }}{{ .Values.deployment.containers.healthCheck.livenessPath }}"
+          #    port: {{ .Values.service.targetPort }}
+          #  initialDelaySeconds: {{ .Values.deployment.containers.healthCheck.initialDelaySeconds }}
+          #  timeoutSeconds: {{ .Values.deployment.containers.healthCheck.timeoutSeconds }}
+          #  failureThreshold: {{ .Values.deployment.containers.healthCheck.failureThreshold }}
+          #readinessProbe:
+          #  httpGet:
+          #    path: "{{ .Values.istio.virtualService.rewrite.uri }}{{ .Values.deployment.containers.healthCheck.readinessPath }}"
+          #    port: {{ .Values.service.targetPort }}
+          #  initialDelaySeconds: {{ .Values.deployment.containers.healthCheck.initialDelaySeconds }}
+          #  timeoutSeconds: {{ .Values.deployment.containers.healthCheck.timeoutSeconds }}
+          #  failureThreshold: {{ .Values.deployment.containers.healthCheck.failureThreshold }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          #volumeMounts:
+          #- name: secrets
+          #  mountPath: /secrets
+          #  readOnly: true
+      #volumes:
+      #- name: secrets
+      #  secret:
+      #    secretName: {{ .Values.getSecrets.name }}
+      #    items:
+      #    - key: {{ .Values.getSecrets.key }}
+      #      path: {{ .Values.getSecrets.path }}
+      restartPolicy: {{ .Values.deployment.containers.restartPolicy }}      
+      {{- with .Values.hostAliases }}
+      hostAliases:
+        {{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - "{{ .Values.appLabel }}"
+              topologyKey: kubernetes.io/hostname  
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }} 

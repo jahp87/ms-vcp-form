@@ -1,0 +1,17 @@
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  labels:
+    app: {{ .Values.appLabel }}
+    version: "v{{ .Values.image.version }}"
+    app.kubernetes.io/name: {{ include "helmchart.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  name: {{ .Values.appLabel }}
+spec:
+  minAvailable: {{ .Values.podDisruptionBudget.minAvailable }}
+  selector:
+    matchLabels:
+      app: {{ .Values.appLabel }}
+      app.kubernetes.io/name: {{ include "helmchart.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}

@@ -3,7 +3,6 @@ import { FormDto } from './dto/form.dto';
 import { FormEntity } from './entities/form.entity';
 import { FormRepository } from './repositories/form.repository';
 
-
 @Injectable()
 export class FormsService {
   constructor(private formRepository: FormRepository) {}
@@ -30,4 +29,27 @@ export class FormsService {
   async remove(id: number): Promise<void> {
     await this.formRepository.remove(id);
   }
+
+  /*
+  getForm(
+    requestStatusId: number,
+    countryId: number,
+    origin: string,
+    typeProviderId: number,
+    businessGroupId: number,
+  ) {
+    console.log(requestStatusId);
+
+    //return new Array<FormEntity>();
+    /*
+    return this.formRepository.getForms(
+      requestStatusId,
+      countryId,
+      origin,
+      typeProviderId,
+      businessGroupId,
+    );
+    
+  }
+  */
 }

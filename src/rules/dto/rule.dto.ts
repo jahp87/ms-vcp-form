@@ -1,20 +1,24 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+
 export class RuleDto {
   @ApiProperty()
   id?: number;
 
   @ApiProperty()
-  countryId: string;
+  countryIds: JSON;
 
   @ApiProperty()
-  suppliesTypeId: string;
+  typeProdiverIds: JSON;
 
   @ApiProperty()
   businessGroupId: string;
 
   @ApiProperty()
-  societyId: string;
+  societyIds: JSON;
+
+  @ApiProperty()
+  origin: string;
 
   @ApiProperty()
   ruleId: string;
@@ -25,6 +29,6 @@ export class RuleDto {
   @ApiProperty()
   ruleActive: boolean;
 
-  @ApiProperty()
-  formIds: number[];
+
 }
+

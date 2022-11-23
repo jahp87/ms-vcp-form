@@ -6,10 +6,12 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { FormsService } from './forms.service';
 import { FormDto } from './dto/form.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { get } from 'http';
 
 ApiTags('forms');
 @Controller('forms')
@@ -40,4 +42,5 @@ export class FormsController {
   remove(@Param('id') id: string) {
     return this.formsService.remove(+id);
   }
+
 }

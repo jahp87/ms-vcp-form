@@ -1,47 +1,37 @@
-import { FormEntity } from 'src/forms/entities/form.entity';
-import {
-  Column,
-  Entity,
-  JoinTable,
-  ManyToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('rules')
 export class RuleEntity {
   @PrimaryGeneratedColumn()
-  id: number;
+  id?: number;
 
-  @Column()
-  countryId: string;
+  @Column({ type: 'json', nullable: true })
+  countryIds: JSON;
 
-  @Column()
-  suppliesTypeId: string;
+  @Column({
+    type: 'json',
+    nullable: true,
+  })
+  typeProdiverIds: JSON;
 
-  @Column()
+  @Column({ nullable: true })
   businessGroupId: string;
 
-  @Column()
-  societyId: string;
+  @Column({
+    type: 'json',
+    nullable: true,
+  })
+  societyIds: JSON;
 
-  @Column()
+  @Column({ nullable: true })
   ruleId: string;
 
   @Column()
   ruleDescription: string;
 
   @Column()
-  ruleActive: boolean;
+  origin: string;
 
-  @ManyToMany(() => FormEntity)
-  @JoinTable({
-    name: 'rules_form',
-    joinColumn: {
-      name: 'rules_id',
-    },
-    inverseJoinColumn: {
-      name: 'forms_id',
-    },
-  })
-  forms: FormEntity[];
+  @Column()
+  ruleActive: boolean;
 }
